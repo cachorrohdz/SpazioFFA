@@ -1,13 +1,29 @@
 package com.minespazio;
 
+import com.minespazio.commands.FFACommand;
+import com.minespazio.commands.KitsCommand;
+import com.minespazio.commands.Lobby;
+import com.minespazio.events.Death;
 import com.minespazio.events.Entrada;
+import com.minespazio.events.Respawn;
+import com.minespazio.kits.Kits;
+import com.minespazio.menus.KitSelector;
+import com.minespazio.menus.LobbyMenu;
+import com.minespazio.utils.Configuracion;
 import com.minespazio.utils.Economia;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
 
 
 public class FFA extends JavaPlugin{
@@ -15,10 +31,11 @@ public class FFA extends JavaPlugin{
     // Instancias
     private Plugin pl;
     public Economy econ;
+    public static Configuracion kits;
     Economia coins = new Economia(this);
 // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // +
 
-    // Cuando cagar el plugin
+    // Cuando carga el plugin
     @Override
     public void onLoad(){
 
@@ -34,6 +51,13 @@ public class FFA extends JavaPlugin{
         saveConfig();
         eventos();
         coins.setupEconomy();
+        configs();
+        Kits kitss = new Kits(this);
+        kitss.saveKit();
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        getCommand("lobby").setExecutor(new Lobby(this));
+        getCommand("kits").setExecutor(new KitsCommand(this));
+        getCommand("admin").setExecutor(new FFACommand(this));
     }
 
 // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // +
@@ -70,7 +94,41 @@ public class FFA extends JavaPlugin{
     //Guardar eventos para despues cargarlos
     private void eventos(){
     NuevoEvento(this, new Entrada(this));
+    NuevoEvento(this, new KitSelector(this));
+        NuevoEvento(this, new Death());
+        NuevoEvento(this, new Respawn(this));
+        NuevoEvento(this, new LobbyMenu(this));
     }
 
 // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // +
+
+    //Guardar configs para despues cargarlas
+    private void configs(){
+    kits = new Configuracion(this, "kits");
+    }
+    // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // +
+
+    //BungeeCord Random servers
+    public String servers() {
+
+        ArrayList servers = (ArrayList)getConfig().getStringList("servers");
+        Random random = new Random();
+        int index = random.nextInt(servers.size());
+        return (String)servers.get(index);
+    }
+ //******************************************************************
+    //BungeeCord Creador de coneccion
+    public void conectar(Player player) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("Connect");
+            out.writeUTF(servers());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        player.sendPluginMessage(this.pl, "BungeeCord", b.toByteArray());
+    }
+    // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // + // +
+
 }

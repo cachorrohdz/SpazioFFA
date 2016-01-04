@@ -3,6 +3,14 @@ main: com.minespazio.FFA
 version: BETA
 author: cachorrohdz
 commands:
-  ffa:
+  admin:
+    description: admin comando minespazio
+    usage: /admin
+  lobby:
     description: comando principal solo administradores
-    usage: /ffa
+    usage: /lobby o salir
+    aliases: [salir]
+  kits:
+    description: comando para abrir menu de kits
+    usage: /kits o kit
+    aliases: [kit]

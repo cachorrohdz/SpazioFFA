@@ -11,7 +11,15 @@ public class Death implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void Muerte(PlayerDeathEvent e){
       Player p = e.getEntity();
+      e.setDeathMessage(null);
+      e.getDrops().clear();
+      e.setDroppedExp(0);
 
+      if(p.getKiller() instanceof Player){
+
+      }else{
+
+      }
     }
 
 
