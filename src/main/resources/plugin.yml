@@ -1,0 +1,8 @@
+name: SpazioFFA
+main: com.minespazio.FFA
+version: BETA
+author: cachorrohdz
+commands:
+  ffa:
+    description: comando principal solo administradores
+    usage: /ffa
